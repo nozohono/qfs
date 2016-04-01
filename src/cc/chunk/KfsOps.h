@@ -372,6 +372,7 @@ struct KfsOp : public KfsCallbackObj
         { sMutex = mutex; }
     static BufferManager* FindDeviceBufferManager(
         kfsChunkId_t chunkId, int64_t chunkVersion);
+    static void Init();
     inline static Display ShowOp(const KfsOp* op)
         { return (op ? Display(*op) : Display(GetNullOp())); }
     virtual bool CheckAccess(ClientSM& sm);

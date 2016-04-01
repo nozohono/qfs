@@ -114,7 +114,7 @@ private:
     ChunkServer& operator=(const ChunkServer&);
 };
 
-extern ChunkServer gChunkServer;
+extern ChunkServer& gChunkServer;
 }
 
 #endif // _CHUNKSERVER_H

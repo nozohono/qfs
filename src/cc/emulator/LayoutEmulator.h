@@ -134,7 +134,7 @@ private:
     LayoutEmulator& operator=(const LayoutEmulator&);
 };
 
-extern LayoutEmulator gLayoutEmulator;
+extern LayoutEmulator& gLayoutEmulator;
 }
 
 #endif // EMULATOR_LAYOUTEMULATOR_H

@@ -1147,7 +1147,14 @@ private:
                 " enabling FD_CLOEXEC" <<
             KFS_LOG_EOM;
         }
-        if (flock(theFd, LOCK_EX | LOCK_NB)) {
+#ifdef KFS_OS_NAME_SUNOS
+	struct flock theLock = {0};
+	theLock.l_type = F_WRLCK;
+	if (fcntl(theFd, F_SETLK, &theLock))
+#else 
+        if (flock(theFd, LOCK_EX | LOCK_NB))
+#endif
+	{
             const int theErr = errno;
             close(theFd);
             return (theErr > 0 ? -theErr : -1);

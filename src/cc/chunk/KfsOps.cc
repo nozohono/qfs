@@ -397,16 +397,20 @@ protected:
         {}
     virtual ostream& ShowSelf(ostream& os) const
         { return os << "null"; }
-    static const KfsOp& sNullOp;
     friend struct KfsOp;
 };
-const KfsOp& KfsOp::NullOp::sNullOp = KfsOp::GetNullOp(); // Force construction.
 
 /* static */ const KfsOp&
 KfsOp::GetNullOp()
 {
     static const NullOp sNullOp;
     return sNullOp;
+}
+
+/* static */ void KfsOp::Init()
+{
+    static CleanupChecker sChecker;
+    GetNullOp();
 }
 
 QCMutex* KfsOp::sMutex      = 0;
@@ -435,7 +439,6 @@ KfsOp::KfsOp(KfsOp_t o, kfsSeq_t s, KfsCallbackObj* c)
     OpsList::Init(*this);
     SET_HANDLER(this, &KfsOp::HandleDone);
     QCStMutexLocker theLocker(sMutex);
-    static CleanupChecker checker;
     sOpsCount++;
     OpsList::PushBack(sOpsList, *this);
 }

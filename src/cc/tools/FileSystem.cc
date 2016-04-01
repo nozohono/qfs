@@ -321,8 +321,9 @@ public:
             inPath.erase(thePrevSize + 1);
             inPath += thePtr->d_name;
             bool theDirFlag;
-#if defined(QC_OS_NAME_CYGWIN) || \
-    (defined(QC_OS_NAME_LINUX) && ! defined(_DIRENT_HAVE_D_TYPE))
+#if defined(KFS_OS_NAME_CYGWIN) || \
+    defined(KFS_OS_NAME_SUNOS) || \
+    (defined(KFS_OS_NAME_LINUX) && ! defined(_DIRENT_HAVE_D_TYPE))
             // Cygwin has no d_type, all other supported platforms have the file
             // type
             struct stat theStat;

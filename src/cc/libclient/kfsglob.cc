@@ -44,6 +44,7 @@
 #include <vector>
 #include <algorithm>
 
+
 // Enabling thread local assumes that the libc glob() implementation is
 // re-entrant.
 #if ! defined(KFS_GLOB_USE_THREAD_LOCAL) && defined(__GNUC__) && \
@@ -54,6 +55,8 @@
 
 namespace KFS
 {
+#ifndef KFS_OS_NAME_SUNOS
+
 namespace client
 {
 using std::vector;
@@ -444,6 +447,8 @@ KfsOpenDir::Glob::StRef KfsOpenDir::Glob::sInstanceRef(
 
 } // namespace client
 
+#endif /* KFS_OS_NAME_SUNOS */
+
 int
 KfsGlob(
     KfsClient&  inClient,
@@ -452,8 +457,12 @@ KfsGlob(
     int (*inErrorHandlerPtr)(const char* inErrPathPtr, int inError),
     glob_t*     inResultPtr)
 {
+#ifdef KFS_OS_NAME_SUNOS
+    return -ENXIO;
+#else
     return client::KfsOpenDir::Glob::Expand(
         inClient, inGlobPtr, inGlobFlags, inErrorHandlerPtr, inResultPtr);
+#endif
 }
 
 }

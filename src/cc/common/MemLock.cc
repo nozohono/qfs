@@ -151,7 +151,7 @@ LockProcessMemory(
         return 0;
     }
     int         theRet    = 0;
-#ifndef KFS_OS_NAME_CYGWIN
+#if ! defined(KFS_OS_NAME_CYGWIN) && ! defined(KFS_OS_NAME_SUNOS)
     const char* theMsgPtr = 0;
     if (inMaxLockedMemorySize == 0 && munlockall()) {
         theRet    = errno;

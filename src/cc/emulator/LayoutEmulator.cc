@@ -34,6 +34,7 @@
 #include "common/StBuffer.h"
 #include "meta/kfstree.h"
 #include "meta/util.h"
+#include "kfsio/Globals.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -52,6 +53,7 @@ using std::ifstream;
 using std::for_each;
 using std::ofstream;
 using boost::bind;
+using libkfsio::globals;
 
 static inline ChunkServerEmulator&
 GetCSEmulator(ChunkServer& server)
@@ -920,8 +922,16 @@ LayoutEmulator::RunFsck(
     return err;
 }
 
-LayoutEmulator gLayoutEmulator;
-LayoutManager& gLayoutManager = gLayoutEmulator;
+static LayoutEmulator&
+MakeLayoutEmulator()
+{
+    globals();
+    static LayoutEmulator gLayoutEmulator;
+    return gLayoutEmulator;
+}
+
+LayoutEmulator& gLayoutEmulator = MakeLayoutEmulator();
+LayoutManager&  gLayoutManager  = gLayoutEmulator;
 const UserAndGroup& MetaUserAndGroup::sUserAndGroup =
     gLayoutManager.GetUserAndGroup();
 

@@ -41,9 +41,8 @@ namespace KFS {
 
 using std::string;
 using libkfsio::globalNetManager;
+using libkfsio::globals;
 
-
-ChunkServer gChunkServer;
 
 bool
 ChunkServer::Init(
@@ -214,5 +213,18 @@ ChunkServer::FindServer(
         errMsg
     );
 }
+
+static ChunkServer sChunkServer;
+ChunkServer& gChunkServer = sChunkServer;
+
+static ChunkManager&
+MakeChunkManager()
+{
+    globals();
+    KfsOp::Init();
+    static ChunkManager sChunkManager;
+    return sChunkManager;
+}
+ChunkManager& gChunkManager = MakeChunkManager();
 
 }

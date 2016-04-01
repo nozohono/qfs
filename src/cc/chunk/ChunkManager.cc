@@ -83,8 +83,6 @@ using boost::bind;
 
 using namespace KFS::libkfsio;
 
-ChunkManager gChunkManager;
-
 typedef QCDLList<ChunkInfoHandle, 0> ChunkList;
 typedef QCDLList<ChunkInfoHandle, 1> ChunkDirList;
 typedef ChunkList ChunkLru;

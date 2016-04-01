@@ -25,10 +25,20 @@
 //----------------------------------------------------------------------------
 
 #include "LayoutManager.h"
+#include "kfsio/Globals.h"
 
 namespace KFS
 {
-static LayoutManager sLayoutManager;
-LayoutManager& gLayoutManager = sLayoutManager;
+using libkfsio::globals;
+
+static LayoutManager&
+GetLayoutManager()
+{
+    globals();
+    static LayoutManager sLayoutManager;
+    return sLayoutManager;
+}
+
+LayoutManager& gLayoutManager = GetLayoutManager();
 const UserAndGroup& MetaUserAndGroup::sUserAndGroup = gLayoutManager.GetUserAndGroup();
 }

@@ -2268,11 +2268,26 @@ protected:
     StTmp<Servers>::Tmp                 mServers4Tmp;
     StTmp<vector<kfsSTier_t> >::Tmp     mPlacementTiersTmp;
 
-    struct ChunkPlacement : public KFS::ChunkPlacement<LayoutManager>
+    class ChunkPlacement : public KFS::ChunkPlacement<LayoutManager>
     {
+    private:
+        static LayoutManager* sLayoutManager;
+    public:
         typedef KFS::ChunkPlacement<LayoutManager> Super;
-        ChunkPlacement();
+        ChunkPlacement()
+            : Super(*sLayoutManager)
+        {
+            assert(sLayoutManager);
+            Reserve(512);
+        }
+        class Init
+        {
+        public:
+            Init(LayoutManager& layoutManager)
+            { sLayoutManager = &layoutManager; }
+        };
     };
+    ChunkPlacement::Init       mChunkPlacementInit;
     StTmp<ChunkPlacement>::Tmp mChunkPlacementTmp;
 
     PrngIsaac64     mRandom;

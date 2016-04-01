@@ -1400,12 +1400,6 @@ LayoutManager::Rand(int64_t interval)
     return (int64_t)(mRandom.Rand() % interval);
 }
 
-LayoutManager::ChunkPlacement::ChunkPlacement()
-    : Super(gLayoutManager)
-{
-    Reserve(512);
-}
-
 const bool kClientAuthAllowPskFlag      = true;
 // By default allow web ui access from local host without authentication.
 const int kClientDefaultNoAuthMetaOps[] = {
@@ -1421,6 +1415,8 @@ const char* const kClientDefaultNoAuthMetaOpsHosts[] = {
     0 // Sentinel
 };
 const bool kCSAuthenticationUsesServerPskFlag = false;
+
+LayoutManager* LayoutManager::ChunkPlacement::sLayoutManager = 0;
 
 LayoutManager::LayoutManager() :
     mNumOngoingReplications(0),
@@ -1625,6 +1621,7 @@ LayoutManager::LayoutManager() :
     mServers3Tmp(),
     mServers4Tmp(),
     mPlacementTiersTmp(),
+    mChunkPlacementInit(*this),
     mChunkPlacementTmp(),
     mRandom()
 {

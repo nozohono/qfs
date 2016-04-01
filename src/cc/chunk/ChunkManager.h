@@ -1065,7 +1065,7 @@ inline ChunkManager::PendingWritesT<IDT>::WriteIdEntry::WriteIdEntry(WriteOp* op
     : OpListEntry(), mOp(op)
 {}
 
-extern ChunkManager gChunkManager;
+extern ChunkManager& gChunkManager;
 
 }
 
