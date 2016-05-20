@@ -112,9 +112,9 @@ public:
           mStripeCount(inStripeCount),
           mRecoveryStripeCount(inRecoveryStripeCount),
           mStrideSize(inStripeSize * inStripeCount),
-          mChunkBlockSize((Offset)CHUNKSIZE * mStripeCount),
+          mChunkBlockSize((Offset)CHUNKSIZE * mStripeCount),//64MBx6=384MB
           mChunkBlockTotalSize(
-            (Offset)CHUNKSIZE * (mStripeCount + mRecoveryStripeCount)),
+            (Offset)CHUNKSIZE * (mStripeCount + mRecoveryStripeCount)), //64MBx9=576MB
           mPos(0),
           mChunkBlockPos(0),
           mStripePos(0),
@@ -131,6 +131,7 @@ public:
         delete [] mTempBufAllocPtr;
         delete [] mBufPtr;
     }
+    //每个偏移的
     void SetPos(
         Offset inPos)
     {
@@ -157,17 +158,24 @@ public:
         mChunkBlockPos += inCount;
         mStripePos     += inCount;
         mFilePos       += inCount;
+        //still in this stripe
         if (mStripePos < mStripeSize) {
             return false;
         }
+        //begin of next stripe
         QCASSERT(mStripePos == mStripeSize);
         mStripePos = 0;
+        //why
         mFilePos += (Offset)CHUNKSIZE - mStripeSize;
+        //still in this circle
         if (++mStripeIdx < mStripeCount) {
             return false;
         }
+        //next circle
         mStripeIdx = 0;
+        //why
         mFilePos -= mChunkBlockSize - mStripeSize;
+        //begin of next chunk
         if (mChunkBlockPos >= mChunkBlockSize) {
             mChunkBlockPos = 0;
             mFilePos += mChunkBlockTotalSize - (Offset)CHUNKSIZE;
@@ -206,6 +214,7 @@ public:
         QCASSERT(inIdx >= 0 && inIdx < mStripeCount);
         return ((inIdx + 1 >= mStripeCount) ? 0 : inIdx + 1);
     }
+    //to do
     Offset GetChunkSize(
         int    inStripeIdx,
         Offset inBlockPos,
@@ -243,14 +252,14 @@ public:
     static IOBufferData NewDataBuffer(
         int inSize)
     {
-        const unsigned int kPtrAlign   = kAlign;
+        const unsigned int kPtrAlign   = kAlign;//16
         const char* const  kNullPtr    = 0;
         char* const        thePtr      = new char [inSize + kPtrAlign];
         const unsigned int thePtrAlign =
             (unsigned int)(thePtr - kNullPtr) % kPtrAlign;
         const int          theOffset   = 0 < thePtrAlign ?
             (int)(kPtrAlign - thePtrAlign) : 0;
-        return IOBufferData(thePtr, inSize + theOffset, theOffset, 0);
+        return  (thePtr, inSize + theOffset, theOffset, 0);
     }
     static void InternalError(
             const char* inMsgPtr = 0)
@@ -294,6 +303,7 @@ private:
 protected:
     void** const mBufPtr;
 
+    //256
     enum { kTempBufSize = kAlign * 16 };
 
     char* GetTempBufSelfPtr(
@@ -346,6 +356,7 @@ public:
         if (0 < inRecoveryStripeCount && ! theEncoderPr) {
             return 0;
         }
+        //out 576MB
         outOpenChunkBlockSize =
             Offset(CHUNKSIZE) * (inStripeCount + inRecoveryStripeCount);
         return new RSWriteStriper(
@@ -663,6 +674,8 @@ private:
             " file size: "    << mFileSize <<
         KFS_LOG_EOM;
     }
+    
+    //stripe
     Offset Stripe(
         IOBuffer& inBuffer,
         Offset    inOffset)
@@ -774,6 +787,8 @@ private:
             " cur: "     << theCurThreshold <<
         KFS_LOG_EOM;
     }
+    
+    //calculate parity
     bool ComputeRecovery(
         int* ioPaddSizeWriteFrontTrimPtr = 0)
     {
@@ -789,16 +804,20 @@ private:
             InternalError("no encoder");
             return false;
         }
+        //why
         if (mOffset < mRecoveryEndPos + mStrideSize) {
             return true; // At least one full stride required.
         }
         QCASSERT(mRecoveryEndPos % mStrideSize == 0);
         int       theStrideHead = (int)(mOffset % mStrideSize);
+        //begin of stride
         const int theTotalSize  =
             (int)((mOffset - theStrideHead) - mRecoveryEndPos);
+        //size of each element 
         const int theSize       = theTotalSize / mStripeCount;
         QCASSERT(theSize * mStripeCount == theTotalSize);
         Offset thePendingCount = 0;
+        //create buf for parity
         for (int i = mStripeCount;
                 i < mStripeCount + mRecoveryStripeCount;
                 i++) {

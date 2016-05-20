@@ -201,9 +201,9 @@ public:
             const char*        inLogPrefixPtr                = 0,
             int64_t            inChunkServerInitialSeqNum    = 0,
             bool               inPreAllocateFlag             = false,
-            int                inMaxWriteSize                = 1 << 20,
-            int                inRandomWriteThreshold        = 1 << 20,
-            int                inMaxReadSize                 = 1 << 20,
+            int                inMaxWriteSize                = 1 << 20, //write 1MB
+            int                inRandomWriteThreshold        = 1 << 20, 
+            int                inMaxReadSize                 = 1 << 20, //read 1MB
             int                inReadLeaseRetryTimeout       = 3,
             int                inLeaseWaitTimeout            = 900,
             int                inMaxMetaServerContentLength  = 1 << 20,

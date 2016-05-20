@@ -199,6 +199,8 @@ private:
     ReplicatorImpl& operator=(const ReplicatorImpl&);
 };
 
+//add by fjt
+//1MB
 const int kDefaultReplicationReadSize = (int)(
     ((1 << 20) + CHECKSUM_BLOCKSIZE - 1) /
     CHECKSUM_BLOCKSIZE * CHECKSUM_BLOCKSIZE);
@@ -336,6 +338,7 @@ ReplicatorImpl::Run()
         }
     }
 
+    //16K
     const ByteCount kChunkHeaderSize = 16 << 10;
     const ByteCount bufBytes = max(kChunkHeaderSize, GetBufferBytesRequired());
     BufferManager&  bufMgr   = DiskIo::GetBufferManager();
