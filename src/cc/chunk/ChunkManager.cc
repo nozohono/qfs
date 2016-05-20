@@ -91,6 +91,7 @@ typedef ChunkList ChunkLru;
 
 // Chunk directory state. The present production deployment use one chunk
 // directory per physical disk.
+//chunk directory 
 struct ChunkManager::ChunkDirInfo : public ITimeout
 {
     ChunkDirInfo()

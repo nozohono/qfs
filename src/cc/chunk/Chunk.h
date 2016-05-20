@@ -75,6 +75,7 @@ static const char* const kKfsChunkFsIdPrefix       =
 static size_t const      kKfsChunkFsIdPrefixLength = 16;
 
 // This structure is on-disk
+//chunk info on disk
 struct DiskChunkInfo_t
 {
     enum Flags

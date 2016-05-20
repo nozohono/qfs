@@ -343,6 +343,7 @@ public:
             QCStMutexLocker theLocker(mMutex);
             if (! mRunFlag) {
                 mRunFlag = true;
+                //32KB
                 const int kStackSize = 32 << 10;
                 mThread.Start(this, kStackSize);
             }

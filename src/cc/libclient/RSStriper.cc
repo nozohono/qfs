@@ -842,6 +842,7 @@ private:
             mBuffersPtr[i].mBuffer.Append(theBuf);
             thePendingCount += mBuffersPtr[i].mBuffer.BytesConsumable();
         }
+        //to do
         for (int thePos = 0, thePrevLen = 0; thePos < theSize; ) {
             int theLen = theSize - thePos;
             for (int i = 0; i < mStripeCount; i++) {
@@ -938,6 +939,7 @@ private:
                 ));
             }
         }
+        //record the end 
         mRecoveryEndPos += theTotalSize;
         if (mLastPartialFlushPos + mStrideSize > mRecoveryEndPos) {
             // The partial stride was previously written / flushed.
@@ -1164,6 +1166,7 @@ public:
             theMin = min(theMin, theChunkPos);
             theMax = max(theMax, theChunkPos + theSize);
             QCASSERT(theMin < theMax && theMax - theMin <= mMaxReadSize);
+            //to do
             if (SeekStripe(theSize) || theLen <= 0) {
                 // Create new request when moving to the next chunk block.
                 theRequestPtr->mRecoverySize = -(theMax - theMin);
@@ -1982,6 +1985,7 @@ private:
             }
             // Process() ensures that the "recovery width" does not exceed max
             // atomic read size, and calculates recovery size.
+            //why
             mRecoverySize = -mRecoverySize;
             if (mRecoverySize <= 0 ||
                     mRecoverySize > inOuter.mMaxReadSize ||
@@ -2000,6 +2004,7 @@ private:
                         (GetChunkPos(mRecoveryPos) + mRecoverySize) << ")" <<
             KFS_LOG_EOM;
             Offset theOffset = mRecoveryPos;
+            //recovery
             for (int i = 0; i < inOuter.mStripeCount; i++) {
                 mPendingCount += GetBuffer(i).InitRecoveryRead(
                     inOuter, theOffset, mRecoverySize);

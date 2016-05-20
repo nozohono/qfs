@@ -50,6 +50,7 @@ using std::cout;
 
 const unsigned int kIoBlkSize = 4 << 10;
 
+//a tool
 static int
 Deserialize(ChunkInfo_t& chunkInfo, int fd, char* buf, bool hdrChksumRequiredFlag)
 {

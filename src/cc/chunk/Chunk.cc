@@ -62,6 +62,7 @@ bool IsValidChunkFile(
     int         i;
 
     outReadFlag = false;
+    //filename=fileid.chunkid.chunkversion
     for (i = 0; i < kNumComponents; i++) {
         components[i] = strtoll(ptr, &end, 10);
         if (components[i] < 0) {
@@ -87,6 +88,7 @@ bool IsValidChunkFile(
     // validated and proper size must be set.
     // The file might be bigger by one io buffer size, and io buffer size is
     // guaranteed to be less or equal to the KFS_CHUNK_HEADER_SIZE.
+    //16K<=chunksize<=64MB+16KB
     const int64_t kMaxChunkFileSize =
         (int64_t)(KFS_CHUNK_HEADER_SIZE + CHUNKSIZE);
     if (filesz < (int64_t)KFS_CHUNK_HEADER_SIZE ||
@@ -102,6 +104,7 @@ bool IsValidChunkFile(
     outFileId    = components[0];
     outChunkId   = chunkId;
     outChunkVers = chunkVers;
+    //chunk data size = chunksize-headsize
     outChunkSize = filesz - GetChunkHeaderSize(chunkVers);
     if (filesz > kMaxChunkFileSize || forceReadFlag) {
         outReadFlag = true;
@@ -132,6 +135,7 @@ bool IsValidChunkFile(
             KFS_LOG_EOM;
             return false;
         }
+        //validate disk info
         DiskChunkInfo_t& dci                  =
             *reinterpret_cast<DiskChunkInfo_t*>(
                 chunkHeaderBuffer.GetPtr());
