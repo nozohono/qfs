@@ -36,21 +36,34 @@ namespace client
 using std::string;
 
 Writer::Striper* RSStriperCreate(
+    //rs type
     int                      inType,
+    //n+k:n
     int                      inStripeCount,
+    //n+k:k
     int                      inRecoveryStripeCount,
+    //64K
     int                      inStripeSize,
+    //file
     Writer::Striper::Offset  inFileSize,
+    //log prefix
     const string&            inLogPrefix,
     Writer::Striper::Impl&   inOuter,
+    //logic file
     Writer::Striper::Offset& outOpenChunkBlockSize,
-    string&                  outErrMsg);
+    string&                  outErrMsg
+);
 
 Reader::Striper* RSStriperCreate(
+    //rs type
     int                      inType,
+    //n+k:n
     int                      inStripeCount,
+    //n+k:k
     int                      inRecoveryStripeCount,
+    //64K
     int                      inStripeSize,
+    //1M?
     int                      inMaxAtomicReadRequestSize,
     bool                     inUseDefaultBufferAllocatorFlag,
     bool                     inFailShortReadsFlag,
