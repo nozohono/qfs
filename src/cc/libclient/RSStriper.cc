@@ -129,10 +129,9 @@ public:
     virtual ~RSStriper()
     {
         delete [] mTempBufAllocPtr;
-        //6+3
         delete [] mBufPtr;
     }
-    //calculate each offset
+    //每个偏移的
     void SetPos(
         Offset inPos)
     {
@@ -145,7 +144,6 @@ public:
         mStripePos              = mChunkBlockPos % mStripeSize;
         mStripeIdx              = (mChunkBlockPos / mStripeSize) % mStripeCount;
         mChunkBlockStartFilePos = mPos / mChunkBlockSize * mChunkBlockTotalSize;
-        //576MB+64MB+64K+stripePos
         mFilePos                =
             mChunkBlockStartFilePos +
             mChunkBlockPos / mStrideSize * mStripeSize +
@@ -167,7 +165,7 @@ public:
         //begin of next stripe
         QCASSERT(mStripePos == mStripeSize);
         mStripePos = 0;
-        //start stripe of next chunk 
+        //why
         mFilePos += (Offset)CHUNKSIZE - mStripeSize;
         //still in this circle
         if (++mStripeIdx < mStripeCount) {
@@ -175,9 +173,9 @@ public:
         }
         //next circle
         mStripeIdx = 0;
-        //this circle of stripe is over,move to the begin
+        //why
         mFilePos -= mChunkBlockSize - mStripeSize;
-        //move to next chunkblock
+        //begin of next chunk
         if (mChunkBlockPos >= mChunkBlockSize) {
             mChunkBlockPos = 0;
             mFilePos += mChunkBlockTotalSize - (Offset)CHUNKSIZE;
@@ -216,7 +214,7 @@ public:
         QCASSERT(inIdx >= 0 && inIdx < mStripeCount);
         return ((inIdx + 1 >= mStripeCount) ? 0 : inIdx + 1);
     }
-    //GetChunkSize(mRecoverStripeIdx, mRecoverBlockPos, mFileSize))
+    //to do
     Offset GetChunkSize(
         int    inStripeIdx,
         Offset inBlockPos,
@@ -401,15 +399,11 @@ public:
             mRecoveryEndPos = mOffset;
         }
         while (! inBuffer.IsEmpty()) {
-            //mOffset=ioOffect+theCnt
             mOffset = Stripe(inBuffer, ioOffset);
             ioOffset = mOffset;
-            //extend the file size
             if (mOffset > mFileSize) {
                 mFileSize = mOffset;
             }
-            
-            //handle stride
             if (! ComputeRecovery()) {
                 return kErrorIO;
             }
@@ -421,7 +415,6 @@ public:
                 " rem: "             << inBuffer.BytesConsumable() <<
             KFS_LOG_EOM;
             // Flush at the end of chunk block.
-            //mOffset!=mRecoveryPos;break
             QCRTASSERT(
                 ioOffset % (CHUNKSIZE * mStripeCount) == 0 &&
                 mOffset == mRecoveryEndPos
@@ -682,7 +675,7 @@ private:
         KFS_LOG_EOM;
     }
     
-    //Stripe:move data from inBuffer to mBufferPtr 
+    //stripe
     Offset Stripe(
         IOBuffer& inBuffer,
         Offset    inOffset)
@@ -707,7 +700,6 @@ private:
                 }
                 Write(theBuffer); // Flush
             }
-            //move from inBuffer to mBuffersPtr[stripe index]
             const int theCnt =
                 theBuffer.mBuffer.Move(&inBuffer, GetStripeRemaining());
             mPendingCount += theCnt;
@@ -720,7 +712,6 @@ private:
                 break;
             }
         } while (! inBuffer.IsEmpty());
-        //iobuffer is empty or this chunkblock is full
         return GetPos();
     }
     void Write(
@@ -801,7 +792,6 @@ private:
     bool ComputeRecovery(
         int* ioPaddSizeWriteFrontTrimPtr = 0)
     {
-        //without rs, no need to recover
         if (mRecoveryStripeCount <= 0) {
             for (int i = 0; i < mStripeCount; i++) {
                 mBuffersPtr[i].mWriteLen =
@@ -810,29 +800,22 @@ private:
             mRecoveryEndPos = mOffset;
             return true;
         }
-        
-        //rs encoder 
         if (! mEncoderPtr) {
             InternalError("no encoder");
             return false;
         }
-        //different handles
+        //why
         if (mOffset < mRecoveryEndPos + mStrideSize) {
             return true; // At least one full stride required.
         }
-        
-        //depends on inOffset
         QCASSERT(mRecoveryEndPos % mStrideSize == 0);
-        //exceed the stride 
         int       theStrideHead = (int)(mOffset % mStrideSize);
-        //total size of strides
+        //begin of stride
         const int theTotalSize  =
             (int)((mOffset - theStrideHead) - mRecoveryEndPos);
         //size of each element 
         const int theSize       = theTotalSize / mStripeCount;
-        //as the above QCASSERT is satisfied
         QCASSERT(theSize * mStripeCount == theTotalSize);
-        //to do
         Offset thePendingCount = 0;
         //create buf for parity
         for (int i = mStripeCount;
@@ -848,7 +831,6 @@ private:
             if (mBuffersPtr[i].mBuffer.IsEmpty()) {
                 const Offset thePos = mBuffersPtr[i - 1].mEndPos + CHUNKSIZE;
                 mBuffersPtr[i].mEndPos = thePos;
-                //why
                 if (i == mStripeCount) {
                     mBuffersPtr[i].mEndPos -= thePos % mStripeSize;
                 }
@@ -860,7 +842,7 @@ private:
             mBuffersPtr[i].mBuffer.Append(theBuf);
             thePendingCount += mBuffersPtr[i].mBuffer.BytesConsumable();
         }
-        //copy data 
+        //to do
         for (int thePos = 0, thePrevLen = 0; thePos < theSize; ) {
             int theLen = theSize - thePos;
             for (int i = 0; i < mStripeCount; i++) {
@@ -924,7 +906,6 @@ private:
                     " len: " << theLen <<
                 KFS_LOG_EOM;
             }
-            //rs encode
             const int theStatus = mEncoderPtr->Encode(
                 mStripeCount, mRecoveryStripeCount, theLen, mBufPtr);
             if (theStatus != 0) {
@@ -944,7 +925,7 @@ private:
             }
             thePos += theLen;
             thePrevLen = theLen;
-        }//end for(thePos)
+        }
         if (IOBuffer::IsDebugVerify()) {
             for (int i = mStripeCount;
                     i < mStripeCount + mRecoveryStripeCount;
@@ -960,7 +941,6 @@ private:
         }
         //record the end 
         mRecoveryEndPos += theTotalSize;
-        //handle partial stride write
         if (mLastPartialFlushPos + mStrideSize > mRecoveryEndPos) {
             // The partial stride was previously written / flushed.
             int theHead = (int)(
@@ -1489,8 +1469,6 @@ private:
     friend class PBuffer;
 
     class Request;
-    
-    //buffer data
     class Buffer
     {
     public:
@@ -2060,7 +2038,6 @@ private:
         bool Recovery(
             Outer& inOuter)
         {
-            //cannot recover
             if (++mBadStripeCount > inOuter.mRecoveryStripeCount) {
                 return false;
             }
@@ -2712,7 +2689,6 @@ private:
         mRecoveryInfo.SetIfEmpty(*this, theRequest.mPos, mRecoverStripeIdx);
         Offset thePos = theRequest.mRecoveryPos;
         if (mStripeSize < inLength) {
-            //read from each server
             for (int i = 0; i < mStripeCount; i++) {
                 Buffer& theBuf = theRequest.GetBuffer(i);
                 theBuf.mBuf.mSize = inLength;
