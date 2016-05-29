@@ -167,6 +167,7 @@ public:
         QCASSERT(Readers::IsEmpty(mReaders));
         delete mStriperPtr;
         mStriperPtr = 0;
+        //64M
         mOpenChunkBlockSize = Offset(CHUNKSIZE);
         mReplicaCount       = inReplicasCount;
         string theErrMsg;

@@ -183,6 +183,7 @@ struct FilePosition {
 ///
 /// \brief A table of entries that describe each open KFS file.
 ///
+// 文件的entry
 struct FileTableEntry {
     // the fid of the parent dir in which this entry "resides"
     kfsFileId_t          parentFid;

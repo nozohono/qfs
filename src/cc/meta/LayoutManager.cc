@@ -8552,6 +8552,8 @@ LayoutManager::ReplicateChunk(
     const size_t numServersPerRack = numRacks <= 1 ?
         (size_t)extraReplicas :
         ((size_t)extraReplicas + numRacks - 1) / numRacks;
+        
+    // find candidate servers to replicate chunk
     // Find candidates other than those that are already hosting the chunk.
     StTmp<Servers>             serversTmp(mServersTmp);
     Servers&                   candidates = serversTmp.Get();
@@ -8618,6 +8620,7 @@ LayoutManager::ReplicateChunk(
     );
     vector<kfsSTier_t>::const_iterator ti = tiers.begin();
     int numDone = 0;
+    //find a server to replicate chunk
     for (Servers::const_iterator it = candidates.begin();
             numDone < extraReplicas && it != candidates.end();
             ++it) {

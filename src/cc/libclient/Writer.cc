@@ -184,6 +184,7 @@ public:
             KFS_LOG_EOM;
             return kErrorParameters;
         }
+        //create a chunk of 64M
         if (! mStriperPtr || mOpenChunkBlockSize < Offset(CHUNKSIZE)) {
             mOpenChunkBlockSize = Offset(CHUNKSIZE);
         }
